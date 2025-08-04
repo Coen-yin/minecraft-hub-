@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ServerVault 🏆 - Premium Minecraft Server Directory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation -->
+        <div class="nav-bar">
+            <div class="nav-brand">🏆 ServerVault</div>
+            <div class="nav-links">
+                <div class="user-info" id="userInfo">
+                    <div class="user-avatar">👤</div>
+                    <span id="currentUserDisplay">Guest</span>
+                </div>
+                <button class="btn btn-primary" onclick="showLoginModal()" id="loginBtn">🔐 Login</button>
+                <button class="btn btn-warning" onclick="toggleAdmin()" id="adminBtn" style="display: none;">🔑 Admin</button>
+                <button class="btn btn-outline" onclick="logout()" id="logoutBtn" style="display: none;">🚪 Logout</button>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <div class="header glass">
+            <h1>ServerVault</h1>
+            <p class="subtitle">🏆 Premium Minecraft Server Discovery Platform • Manually Curated Excellence</p>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalServers">12</div>
+                    <div class="stat-label">Premium Servers</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="onlineServers">12</div>
+                    <div class="stat-label">Online Now</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalUsers">1</div>
+                    <div class="stat-label">Community Members</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="featuredCount">3</div>
+                    <div class="stat-label">👑 Featured</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="avgPlayers">245</div>
+                    <div class="stat-label">Avg Players</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pendingCount">0</div>
+                    <div class="stat-label">Pending Review</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Panel -->
+        <div id="adminPanel" class="admin-panel">
+            <div class="admin-header">
+                <div class="admin-title">
+                    <h3 style="margin: 0; color: var(--warning);">🔑 Admin Control Center</h3>
+                    <div class="admin-badge">Welcome, <span id="adminUsername">Admin</span></div>
+                </div>
+                <button class="btn btn-secondary" onclick="toggleAdmin()">❌ Close</button>
+            </div>
+            
+            <div class="admin-controls">
+                <button class="btn btn-gold" onclick="showSponsorModal()">👑 Add Featured Server</button>
+                <button class="btn btn-primary" onclick="showDataModal()">📊 View Database</button>
+                <button class="btn btn-success" onclick="exportData()">💾 Export Data</button>
+                <button class="btn btn-secondary" onclick="addSampleServers()">🧪 Add Samples</button>
+                <button class="btn btn-success" onclick="bulkApproveServers()">✅ Approve All</button>
+                <button class="btn btn-danger" onclick="bulkDenyServers()">❌ Deny All</button>
+                <button class="btn btn-danger" onclick="resetData()">🗑️ Reset Database</button>
+            </div>
+
+            <div id="pendingList">
+                <h4 style="color: var(--warning); margin-bottom: 15px;">📋 Pending Server Reviews:</h4>
+                <div id="pendingItems"></div>
+            </div>
+        </div>
+
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <!-- Content Section -->
+            <div class="content-section">
+                <!-- Controls -->
+                <div class="controls">
+                    <div class="controls-row">
+                        <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search premium servers by name, IP, version, or features..." onkeyup="filterServers()">
+                        
+                        <select id="versionFilter" onchange="filterServers()" class="btn btn-secondary">
+                            <option value="">All Versions</option>
+                            <option value="1.21.4">1.21.4 (Latest)</option>
+                            <option value="1.21.3">1.21.3</option>
+                            <option value="1.20.4">1.20.4</option>
+                            <option value="1.20.3">1.20.3</option>
+                            <option value="1.20.2">1.20.2</option>
+                            <option value="1.20.1">1.20.1</option>
+                        </select>
+                        
+                        <select id="categoryFilter" onchange="filterServers()" class="btn btn-secondary">
+                            <option value="">All Categories</option>
+                            <option value="SMP">SMP</option>
+                            <option value="Creative">Creative</option>
+                            <option value="PvP">PvP</option>
+                            <option value="Minigames">Minigames</option>
+                            <option value="Skyblock">Skyblock</option>
+                            <option value="Modded">Modded</option>
+                            <option value="Roleplay">Roleplay</option>
+                            <option value="Hardcore">Hardcore</option>
+                        </select>
+                        
+                        <button class="btn btn-primary" onclick="showSubmitModal()">➕ Submit Server</button>
+                    </div>
+                </div>
+
+                <!-- Servers Grid -->
+                <div id="serversGrid" class="servers-grid">
+                    <!-- Servers will be populated here -->
+                </div>
+            </div>
+
+            <!-- Chat AI Sidebar -->
+            <div class="chat-sidebar">
+                <div class="chat-header">
+                    <div class="chat-avatar">🤖</div>
+                    <div>
+                        <h4 style="margin: 0; color: var(--primary);">Server Assistant</h4>
+                        <div class="chat-status">
+                            <div class="status-dot"></div>
+                            <span>Online & Ready</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chat-messages" id="chatMessages">
+                    <!-- Chat messages will be populated here -->
+                </div>
+                
+                <div class="chat-typing" id="chatTyping">
+                    <div class="typing-dots">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                    <span>Assistant is typing...</span>
+                </div>
+                
+                <div class="chat-input-group">
+                    <input type="text" id="chatInput" class="chat-input" placeholder="Ask about servers..." onkeypress="handleChatEnter(event)">
+                    <button class="chat-send" id="chatSendBtn" onclick="sendChatMessage()">📤</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p style="font-size: 1.1rem; margin-bottom: 10px;">🏆 ServerVault • Premium Minecraft Server Directory</p>
+            <p style="opacity: 0.8; margin-bottom: 20px;">Discover the best Minecraft servers, manually curated for excellence</p>
+            
+            <div class="footer-status">
+                <div class="status-item">
+                    <div class="status-indicator"></div>
+                    <span>Live: <span id="currentTime">2025-08-04 12:40:15</span> UTC</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-indicator"></div>
+                    <span>User: <span id="currentUser">Guest</span></span>
+                </div>
+                <div class="status-item">
+                    <div class="status-indicator"></div>
+                    <span>Database: <span id="saveStatus">🟢 Active</span></span>
+                </div>
+                <div class="status-item">
+                    <div class="status-indicator"></div>
+                    <span>Curation: <span id="curationStatus">🟢 Manual</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">🔐 Admin Login</h2>
+                <button class="close" onclick="closeModal('loginModal')">&times;</button>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label">Username *</label>
+                    <input type="text" id="username" class="form-input" required placeholder="Enter admin username">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password *</label>
+                    <input type="password" id="password" class="form-input" required placeholder="Enter admin password">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 15px;">🔐 Login as Admin</button>
+                <p style="text-align: center; margin-top: 15px; font-size: 0.9rem; opacity: 0.7;">
+                    Admin access required for server management
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Submit Server Modal -->
+    <div id="submitModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">➕ Submit Your Server</h2>
+                <button class="close" onclick="closeModal('submitModal')">&times;</button>
+            </div>
+            <form id="submitForm">
+                <div class="form-group">
+                    <label class="form-label">Server Name *</label>
+                    <input type="text" id="serverName" class="form-input" required placeholder="My Awesome Server">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Server IP Address *</label>
+                    <input type="text" id="serverIP" class="form-input" required placeholder="play.myserver.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Minecraft Version *</label>
+                    <select id="serverVersion" class="form-select" required>
+                        <option value="">Select Version</option>
+                        <option value="1.21.4">1.21.4 (Latest)</option>
+                        <option value="1.21.3">1.21.3</option>
+                        <option value="1.20.4">1.20.4</option>
+                        <option value="1.20.3">1.20.3</option>
+                        <option value="1.20.2">1.20.2</option>
+                        <option value="1.20.1">1.20.1</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Server Category *</label>
+                    <select id="serverCategory" class="form-select" required>
+                        <option value="">Select Category</option>
+                        <option value="SMP">SMP (Survival Multiplayer)</option>
+                        <option value="Creative">Creative</option>
+                        <option value="PvP">PvP</option>
+                        <option value="Minigames">Minigames</option>
+                        <option value="Skyblock">Skyblock</option>
+                        <option value="Modded">Modded</option>
+                        <option value="Roleplay">Roleplay</option>
+                        <option value="Hardcore">Hardcore</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Server Description</label>
+                    <textarea id="serverDescription" class="form-textarea" rows="4" placeholder="Describe your server's unique features, gameplay, and community..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 15px;">📤 Submit for Review</button>
+                <p style="text-align: center; margin-top: 10px; font-size: 0.85rem; opacity: 0.7;">
+                    All submissions are manually reviewed by our admin team
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sponsor Modal -->
+    <div id="sponsorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">👑 Add Featured Server</h2>
+                <button class="close" onclick="closeModal('sponsorModal')">&times;</button>
+            </div>
+            <form id="sponsorForm">
+                <div class="form-group">
+                    <label class="form-label">Server Name *</label>
+                    <input type="text" id="sponsorName" class="form-input" required placeholder="Premium Server Name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Server IP Address *</label>
+                    <input type="text" id="sponsorIP" class="form-input" required placeholder="premium.server.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Minecraft Version *</label>
+                    <select id="sponsorVersion" class="form-select" required>
+                        <option value="">Select Version</option>
+                        <option value="1.21.4">1.21.4 (Latest)</option>
+                        <option value="1.21.3">1.21.3</option>
+                        <option value="1.20.4">1.20.4</option>
+                        <option value="1.20.3">1.20.3</option>
+                        <option value="1.20.2">1.20.2</option>
+                        <option value="1.20.1">1.20.1</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Server Category *</label>
+                    <select id="sponsorCategory" class="form-select" required>
+                        <option value="">Select Category</option>
+                        <option value="Premium">Premium</option>
+                        <option value="SMP">SMP</option>
+                        <option value="Creative">Creative</option>
+                        <option value="PvP">PvP</option>
+                        <option value="Minigames">Minigames</option>
+                        <option value="Skyblock">Skyblock</option>
+                        <option value="Modded">Modded</option>
+                        <option value="Roleplay">Roleplay</option>
+                        <option value="Hardcore">Hardcore</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Server Description *</label>
+                    <textarea id="sponsorDescription" class="form-textarea" rows="4" required placeholder="Premium features and benefits that make this server special..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-gold" style="width: 100%; padding: 15px;">👑 Add as Featured Server</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Data Modal -->
+    <div id="dataModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">📊 Database Management</h2>
+                <button class="close" onclick="closeModal('dataModal')">&times;</button>
+            </div>
+            <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 15px; margin: 20px 0;">
+                <h3 style="color: var(--primary); margin-bottom: 15px;">Current Database (JSON Format):</h3>
+                <div id="jsonDisplay" class="json-display"></div>
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button class="btn btn-primary" onclick="updateJsonDisplay()">🔄 Refresh</button>
+                    <button class="btn btn-success" onclick="downloadData()">💾 Download</button>
+                    <button class="btn btn-secondary" onclick="copyJsonToClipboard()">📋 Copy JSON</button>
+                </div>
+            </div>
+            <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 15px;">
+                <h3 style="color: var(--success); margin-bottom: 15px;">GitHub Integration:</h3>
+                <p>✅ Data automatically writes to <strong>gamedata.json</strong></p>
+                <p>🔄 Changes sync in real-time to GitHub repository</p>
+                <p>💾 All updates persist across sessions and users</p>
+                <p>🌐 Data available globally via GitHub Pages</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
